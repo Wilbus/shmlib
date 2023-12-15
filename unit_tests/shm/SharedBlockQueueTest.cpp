@@ -6,10 +6,10 @@
 
 using namespace shm;
 
-size_t size = 100000;
+size_t size = 1e6;
 key_t key = 1234;
 
-size_t blocksize = 10;
+size_t blocksize = 50;
 
 unsigned counter1 = 0;
 
@@ -59,11 +59,21 @@ void pushfunc()
         int counter = 0;
         for (unsigned i = 0; i < blocksize; i++)
         {
-            bytes0[i] = counter;
+            if (counter == 0)
+                bytes0[i] = 6;
+            if (counter == blocksize - 1)
+                bytes0[i] = 9;
             counter++;
         }
         queue.writeblock(bytes0);
         blockcount++;
+
+        /*std::printf("pushing\n");
+        for (auto b : bytes0)
+            {
+                std::printf("%d", b);
+            }
+            std::printf("\n");*/
     }
     std::printf("wrote %d blocks\n", blockcount);
 }
@@ -93,6 +103,8 @@ int main(int argc, char* argv[])
     if (argc == 1)
     {
         SharedBuffer queue = SharedBuffer(key, size, true);
+/*begin singlethreaded test, dont run with other tests since they are testing with diffferent sizes*/
+#if 0
         std::vector<uint8_t> bytes0(5, 0);
         std::vector<uint8_t> bytes1(5, 0);
         std::vector<uint8_t> bytes2(5, 0);
@@ -168,7 +180,7 @@ int main(int argc, char* argv[])
         }
 
         std::printf("queue should be empty: %d\n", readqueue.empty());
-
+#endif
         /*begin multi process test*/
         std::string arg = argv[0];
         std::thread t1process(syscall0, arg);
@@ -178,7 +190,7 @@ int main(int argc, char* argv[])
         t2process.join();
         t3process.join();
 
-        readqueue.releaseBuffer();
+        queue.releaseBuffer();
     }
     else if (argc == 2)
     {

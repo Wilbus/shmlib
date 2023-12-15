@@ -23,15 +23,11 @@ SharedSemaphoreSentry::SharedSemaphoreSentry(std::string semaphoreName)
     }
 
     wait();
-    std::cout << "sentry start\n";
 }
 SharedSemaphoreSentry::SharedSemaphoreSentry(std::string semaphoreName, bool execreate)
     : semaphoreName(semaphoreName)
     , execreate(execreate)
 {
-    // if (execreate)
-    // semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_EXCL, SEM_PERMS, INITIAL_VALUE);
-    // else
     semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_VALUE);
 
     if (semaphore == SEM_FAILED)

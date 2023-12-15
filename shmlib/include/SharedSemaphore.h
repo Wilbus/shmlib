@@ -14,6 +14,7 @@ class SharedSemaphore : public ISharedSemaphore
 public:
     SharedSemaphore();
     SharedSemaphore(std::string semaphoreName);
+    SharedSemaphore(std::string semaphoreName, int initialValue);
     SharedSemaphore(std::string semaphoreName, bool execreate);
 
     SharedSemaphore(const SharedSemaphore& other);

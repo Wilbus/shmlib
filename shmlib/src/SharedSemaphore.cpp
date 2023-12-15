@@ -13,6 +13,19 @@ SharedSemaphore::SharedSemaphore()
 {
 }
 
+SharedSemaphore::SharedSemaphore(std::string semaphoreName, int initialValue)
+    : semaphoreName(semaphoreName)
+    , execreate(false)
+{
+    semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, initialValue);
+
+    if (semaphore == SEM_FAILED)
+    {
+        perror("sem_open(3) error");
+        exit(EXIT_FAILURE);
+    }
+}
+
 SharedSemaphore::SharedSemaphore(std::string semaphoreName)
     : semaphoreName(semaphoreName)
 {

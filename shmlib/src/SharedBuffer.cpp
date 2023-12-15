@@ -14,18 +14,6 @@ SharedBuffer::SharedBuffer(key_t id, uint64_t length, bool newMem)
     , master(newMem)
 {
     sRingBuffer = SharedRingBufferNotThreadSafe(id, length, newMem);
-    /*shm = SharedMemory<uint8_t>(std::to_string(id), sizeof(uint8_t) * length, newMem);
-    buffPropertiesShm = SharedMemory<uint64_t>(std::to_string(id + 1), sizeof(uint64_t) * PROPERTIES, newMem);
-    buffPtr = shm.get();
-    propertiesPtr = buffPropertiesShm.get();
-
-    if (newMem) // only init these to 0 if this is the first time opening this mem region
-    {
-        propertiesPtr[TAIL] = 0;
-        propertiesPtr[HEAD] = 0;
-        propertiesPtr[SIZE] = length; // number of bytes of shared memory, tail should not exceed length
-        propertiesPtr[OPCOUNT] = 0;
-    }*/
 }
 
 // SharedBuffer::~SharedBuffer()
@@ -35,12 +23,13 @@ SharedBuffer::SharedBuffer(key_t id, uint64_t length, bool newMem)
 
 bool SharedBuffer::releaseBuffer()
 {
+    SharedSemaphoreSentry ss(std::to_string(id + 1), true);
     sRingBuffer.releaseBuffer();
 }
 
 bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
 {
-    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    SharedSemaphoreSentry ss(std::to_string(id + 1));
 
     auto ringbufferOpCount = sRingBuffer.getOpCount(); // full when opcounet == size
     auto size = sRingBuffer.getSize();
@@ -59,7 +48,7 @@ bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
 
 bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
 {
-    SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    SharedSemaphoreSentry ss(std::to_string(id + 1));
 
     // we cant the block if the block size we are trying to pop is
     // greater than the number of bytes currently in the ring buffer
@@ -80,7 +69,7 @@ bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
 
 bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
 {
-    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    SharedSemaphoreSentry ss(std::to_string(id + 1));
 
     if (empty())
     {
@@ -97,6 +86,7 @@ bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
 
 bool SharedBuffer::empty()
 {
+    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
     return sRingBuffer.isEmpty();
 }
 
