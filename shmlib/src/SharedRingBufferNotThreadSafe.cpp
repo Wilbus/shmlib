@@ -22,8 +22,11 @@ SharedRingBufferNotThreadSafe::SharedRingBufferNotThreadSafe(key_t id, uint64_t 
     : id(id)
     , master(newMem)
 {
-    shm = SharedMemory<uint8_t>(std::to_string(id), sizeof(uint8_t) * size, newMem);
-    buffPropertiesShm = SharedMemory<uint64_t>(std::to_string(id + 1), sizeof(uint64_t) * PROPERTIES, newMem);
+    std::string name = std::to_string(id) + memRegionName;
+    std::string propname = std::to_string(id) + propertiesRegionName;
+
+    shm = SharedMemory<uint8_t>(name, sizeof(uint8_t) * size, newMem);
+    buffPropertiesShm = SharedMemory<uint64_t>(propname, sizeof(uint64_t) * PROPERTIES, newMem);
     buffPtr = shm.get();
     propertiesPtr = buffPropertiesShm.get();
     buffPtr = shm.get();
@@ -48,8 +51,11 @@ SharedRingBufferNotThreadSafe::SharedRingBufferNotThreadSafe(const SharedRingBuf
     master = other.getMaster();
     auto otherSize = other.getSize(); // in bytes
 
-    shm = SharedMemory<uint8_t>(std::to_string(id), otherSize, master);
-    buffPropertiesShm = SharedMemory<uint64_t>(std::to_string(id + 1), sizeof(uint64_t) * PROPERTIES, master);
+    std::string name = std::to_string(id) + memRegionName;
+    std::string propname = std::to_string(id) + propertiesRegionName;
+
+    shm = SharedMemory<uint8_t>(name, otherSize, master);
+    buffPropertiesShm = SharedMemory<uint64_t>(propname, sizeof(uint64_t) * PROPERTIES, master);
     buffPtr = shm.get();
     propertiesPtr = buffPropertiesShm.get();
     buffPtr = shm.get();
@@ -67,8 +73,11 @@ SharedRingBufferNotThreadSafe& SharedRingBufferNotThreadSafe::operator=(const Sh
     master = other.getMaster();
     auto otherSize = other.getSize(); // in bytes
 
-    shm = SharedMemory<uint8_t>(std::to_string(id), otherSize, master);
-    buffPropertiesShm = SharedMemory<uint64_t>(std::to_string(id + 1), sizeof(uint64_t) * PROPERTIES, master);
+    std::string name = std::to_string(id) + memRegionName;
+    std::string propname = std::to_string(id) + propertiesRegionName;
+
+    shm = SharedMemory<uint8_t>(name, otherSize, master);
+    buffPropertiesShm = SharedMemory<uint64_t>(propname, sizeof(uint64_t) * PROPERTIES, master);
     buffPtr = shm.get();
     propertiesPtr = buffPropertiesShm.get();
     buffPtr = shm.get();

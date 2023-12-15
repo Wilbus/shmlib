@@ -1,17 +1,27 @@
 #include "SharedBuffer.h"
 
 #include <cassert>
+#include <random>
 #include <stdio.h>
 #include <unistd.h>
 
 using namespace shm;
 
-size_t size = 1e6;
+size_t size = 1e6; // max size holding structures of varying blocksize
 key_t key = 1234;
 
-size_t blocksize = 50;
+size_t blocksize = 50; // max size of one block
 
 unsigned counter1 = 0;
+
+unsigned generateRandomInt()
+{
+    std::random_device seed;
+    std::mt19937 gen{seed()};                    // seed the generator
+    std::uniform_int_distribution<> dist{1, 50}; // set min and max
+    unsigned guess = dist(gen);                  // generate number
+    return guess;
+}
 
 void syscall0(std::string arg)
 {
@@ -55,18 +65,19 @@ void pushfunc()
     unsigned blockcount = 0;
     for (unsigned i = 0; i < size / blocksize; i++) // push size / vecsize blocks
     {
-        std::vector<uint8_t> bytes0(blocksize, 0);
+        auto randomBlockSize = generateRandomInt();
+        std::vector<uint8_t> bytes0(randomBlockSize, 0);
         unsigned counter = 0;
-        for (unsigned i = 0; i < blocksize; i++)
+        for (unsigned i = 0; i < randomBlockSize; i++)
         {
             if (counter == 0)
                 bytes0[i] = 6;
-            if (counter == blocksize - 1)
+            if (counter == randomBlockSize - 1)
                 bytes0[i] = 9;
             counter++;
         }
-        queue.writeblock(bytes0);
-        blockcount++;
+        if (queue.writeblock(bytes0))
+            blockcount++;
 
         /*std::printf("pushing\n");
         for (auto b : bytes0)
@@ -84,7 +95,7 @@ void popfunc1()
     unsigned blockcount = 0;
     for (unsigned i = 0; i < (size / blocksize) * 100; i++) // force pop more than push times
     {
-        std::vector<uint8_t> bytes1(blocksize, 0);
+        std::vector<uint8_t> bytes1;
         if (queue.popblock(bytes1))
         {
             blockcount++;

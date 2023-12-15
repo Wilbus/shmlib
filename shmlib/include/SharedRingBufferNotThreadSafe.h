@@ -56,5 +56,7 @@ private:
     SharedMemory<uint8_t> shm;
     SharedMemory<uint64_t> buffPropertiesShm;
     uint64_t* propertiesPtr;
+    const std::string memRegionName = "_SharedRingBufferNotThreadSafe_memoryRegion";
+    const std::string propertiesRegionName = "_SharedRingBufferNotThreadSafe_propertiesRegion";
 };
 } // namespace shm

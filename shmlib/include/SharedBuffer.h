@@ -2,6 +2,7 @@
 
 #include "SharedRingBufferNotThreadSafe.h"
 #include "SharedSemaphoreSentry.h"
+#include "TSharedRingBufferNotThreadSafe.h"
 
 #include <vector>
 
@@ -37,8 +38,14 @@ public:
 
 private:
     bool empty();
+    bool pushblocksize(uint64_t size);
+    bool popblocksize(uint64_t& size);
+
     key_t id;
     bool master;
+    std::string semaphoreKeyName;
     SharedRingBufferNotThreadSafe sRingBuffer;
+    TSharedRingBufferNotThreadSafe<uint64_t> sSizesBuffer;
+    const std::string semaphoreName = "_SharedVarBlockQueue_semaphore";
 };
 } // namespace shm

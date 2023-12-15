@@ -40,7 +40,10 @@ function(add_ut_nongtest project_name source_path)
 endfunction()
 
 add_ut("SharedRingBufferTest" ${CMAKE_CURRENT_LIST_DIR}/shm/SharedRingBufferTest.cpp)
-add_ut_run(${parent_path}/run_ut.sh ${parent_path}/runfiles/unit_tests/SharedBufferTest)
+add_ut_run(${parent_path}/run_ut.sh ${parent_path}/runfiles/unit_tests/SharedRingBufferTest)
+
+add_ut("TSharedRingBufferTest" ${CMAKE_CURRENT_LIST_DIR}/shm/TSharedRingBufferTest.cpp)
+add_ut_run(${parent_path}/run_ut.sh ${parent_path}/runfiles/unit_tests/TSharedRingBufferTest)
 
 add_ut("SharedBlockQueueTest" ${CMAKE_CURRENT_LIST_DIR}/shm/SharedBlockQueueTest.cpp)
 add_ut_run(${parent_path}/run_ut.sh ${parent_path}/runfiles/unit_tests/SharedBlockQueueTest)
