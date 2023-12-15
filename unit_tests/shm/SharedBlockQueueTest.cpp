@@ -1,16 +1,17 @@
 #include "SharedBuffer.h"
+
 #include <cassert>
 #include <stdio.h>
 #include <unistd.h>
 
 using namespace shm;
 
-    size_t size = 100000;
-    key_t key = 1234;
+size_t size = 100000;
+key_t key = 1234;
 
-    size_t blocksize = 10;
+size_t blocksize = 10;
 
-    unsigned counter1 = 0;
+unsigned counter1 = 0;
 
 void syscall0(std::string arg)
 {
@@ -52,11 +53,11 @@ void pushfunc()
     SharedBuffer queue = SharedBuffer(key, size, false);
 
     unsigned blockcount = 0;
-    for(unsigned i = 0; i < size / blocksize; i++) //push size / vecsize blocks
+    for (unsigned i = 0; i < size / blocksize; i++) // push size / vecsize blocks
     {
         std::vector<uint8_t> bytes0(blocksize, 0);
         int counter = 0;
-        for(unsigned i = 0; i < blocksize; i++)
+        for (unsigned i = 0; i < blocksize; i++)
         {
             bytes0[i] = counter;
             counter++;
@@ -71,12 +72,17 @@ void popfunc1()
 {
     SharedBuffer queue = SharedBuffer(key, size, false);
     unsigned blockcount = 0;
-    for(unsigned i = 0; i < (size / blocksize) * 100; i++) //force pop more than push times
+    for (unsigned i = 0; i < (size / blocksize) * 100; i++) // force pop more than push times
     {
         std::vector<uint8_t> bytes1(blocksize, 0);
-        if(queue.popblock(bytes1))
+        if (queue.popblock(bytes1))
         {
             blockcount++;
+            for (auto b : bytes1)
+            {
+                std::printf("%d", b);
+            }
+            std::printf("\n");
         }
     }
     std::printf("read %d blocks\n", blockcount);
@@ -93,25 +99,25 @@ int main(int argc, char* argv[])
         std::vector<uint8_t> bytes3(5, 0);
 
         int counter = 0;
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             bytes0[i] = counter;
             counter++;
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             bytes1[i] = counter;
             counter++;
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             bytes2[i] = counter;
             counter++;
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             bytes3[i] = counter;
             counter++;
@@ -132,38 +138,38 @@ int main(int argc, char* argv[])
 
         std::cout << "reading back buffer\n";
         SharedBuffer readqueue = SharedBuffer(key, size, false);
-        //readqueue.readfront(readbytes0);
+        // readqueue.readfront(readbytes0);
         readqueue.popblock(readbytes0);
-        //readqueue.readfront(readbytes1);
+        // readqueue.readfront(readbytes1);
         readqueue.popblock(readbytes1);
-        //readqueue.readfront(readbytes2);
+        // readqueue.readfront(readbytes2);
         readqueue.popblock(readbytes2);
-        //readqueue.readfront(readbytes3);
+        // readqueue.readfront(readbytes3);
         readqueue.popblock(readbytes3);
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             std::cout << (unsigned)readbytes0[i] << "\n";
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             std::cout << (unsigned)readbytes1[i] << "\n";
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             std::cout << (unsigned)readbytes2[i] << "\n";
         }
 
-        for(unsigned i = 0; i < 5; i++)
+        for (unsigned i = 0; i < 5; i++)
         {
             std::cout << (unsigned)readbytes3[i] << "\n";
         }
 
         std::printf("queue should be empty: %d\n", readqueue.empty());
 
-/*begin multi process test*/
+        /*begin multi process test*/
         std::string arg = argv[0];
         std::thread t1process(syscall0, arg);
         std::thread t2process(syscall1, arg);

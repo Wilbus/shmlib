@@ -33,14 +33,14 @@ SharedBuffer::SharedBuffer(key_t id, uint64_t length, bool newMem)
 // shm.markForRelease();
 //}
 
- bool SharedBuffer::releaseBuffer()
-    {
-        sRingBuffer.releaseBuffer();
-    }
+bool SharedBuffer::releaseBuffer()
+{
+    sRingBuffer.releaseBuffer();
+}
 
 bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
 {
-    SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
 
     auto ringbufferOpCount = sRingBuffer.getOpCount(); // full when opcounet == size
     auto size = sRingBuffer.getSize();
@@ -61,32 +61,33 @@ bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
 {
     SharedSemaphoreSentry ss(std::to_string(id + 1), true);
 
-    //we cant the block if the block size we are trying to pop is 
-    //greater than the number of bytes currently in the ring buffer
-    auto ringbufferOpCount = sRingBuffer.getOpCount(); 
-    if(bytes.size() > ringbufferOpCount || empty())
+    // we cant the block if the block size we are trying to pop is
+    // greater than the number of bytes currently in the ring buffer
+    auto ringbufferOpCount = sRingBuffer.getOpCount();
+    if (bytes.size() > ringbufferOpCount || empty())
     {
         return false;
     }
 
-    for(unsigned i = 0; i < bytes.size(); i++)
+    for (unsigned i = 0; i < bytes.size(); i++)
     {
         bytes[i] = sRingBuffer.front();
         sRingBuffer.pop();
     }
+
     return true;
 }
 
 bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
 {
-    SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
 
-    if(empty())
+    if (empty())
     {
         return false;
     }
-    
-    for(unsigned i = 0; i < bytes.size(); i++)
+
+    for (unsigned i = 0; i < bytes.size(); i++)
     {
         bytes[i] = sRingBuffer.front();
         sRingBuffer.pop();
