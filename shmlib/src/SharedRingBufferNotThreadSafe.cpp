@@ -1,7 +1,6 @@
-#include "SharedRingBuffer.h"
+#include "SharedRingBufferNotThreadSafe.h"
 
 #include "SharedSemaphoreSentry.h"
-
 namespace shm {
 
 const uint8_t PROPERTIES = 4;
@@ -15,11 +14,11 @@ const uint8_t OPCOUNT = 3;
 #define _size propertiesPtr[SIZE]
 #define _opcount propertiesPtr[OPCOUNT]
 
-SharedRingBuffer::SharedRingBuffer()
+SharedRingBufferNotThreadSafe::SharedRingBufferNotThreadSafe()
 {
 }
 
-SharedRingBuffer::SharedRingBuffer(key_t id, uint64_t size, bool newMem)
+SharedRingBufferNotThreadSafe::SharedRingBufferNotThreadSafe(key_t id, uint64_t size, bool newMem)
     : id(id)
     , master(newMem)
 {
@@ -37,13 +36,13 @@ SharedRingBuffer::SharedRingBuffer(key_t id, uint64_t size, bool newMem)
     }
 }
 
-SharedRingBuffer::~SharedRingBuffer()
+SharedRingBufferNotThreadSafe::~SharedRingBufferNotThreadSafe()
 {
     // shm.markForRelease();
 }
 
 // remap the pointer addresses rather than copy the sharememory class' pointers
-SharedRingBuffer::SharedRingBuffer(const SharedRingBuffer& other)
+SharedRingBufferNotThreadSafe::SharedRingBufferNotThreadSafe(const SharedRingBufferNotThreadSafe& other)
 {
     id = other.getKey();
     master = other.getMaster();
@@ -57,7 +56,7 @@ SharedRingBuffer::SharedRingBuffer(const SharedRingBuffer& other)
 }
 
 // remap the pointer addresses rather than copy the sharememory class' pointers
-SharedRingBuffer& SharedRingBuffer::operator=(const SharedRingBuffer& other)
+SharedRingBufferNotThreadSafe& SharedRingBufferNotThreadSafe::operator=(const SharedRingBufferNotThreadSafe& other)
 {
     if (this == &other)
     {
@@ -77,7 +76,7 @@ SharedRingBuffer& SharedRingBuffer::operator=(const SharedRingBuffer& other)
     return *this;
 }
 
-bool SharedRingBuffer::push(uint8_t data)
+bool SharedRingBufferNotThreadSafe::push(uint8_t data)
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     if (_opcount == _size)
@@ -92,7 +91,7 @@ bool SharedRingBuffer::push(uint8_t data)
     return true;
 }
 
-bool SharedRingBuffer::pop()
+bool SharedRingBufferNotThreadSafe::pop()
 {
     // std::cout << std::this_thread::get_id() << "pop() wait mutex\n";
     SharedSemaphoreSentry ss(std::to_string(id), true);
@@ -111,26 +110,26 @@ bool SharedRingBuffer::pop()
     return true;
 }
 
-size_t SharedRingBuffer::size()
+size_t SharedRingBufferNotThreadSafe::size()
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _size - _head - _tail;
 }
 
-bool SharedRingBuffer::isEmpty()
+bool SharedRingBufferNotThreadSafe::isEmpty()
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _opcount == 0;
 }
 
-uint8_t SharedRingBuffer::front()
+uint8_t SharedRingBufferNotThreadSafe::front()
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     uint8_t data = buffPtr[_head];
     return data;
 }
 
-bool SharedRingBuffer::releaseBuffer()
+bool SharedRingBufferNotThreadSafe::releaseBuffer()
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     shm.markForRelease();
@@ -138,49 +137,49 @@ bool SharedRingBuffer::releaseBuffer()
     return true;
 }
 
-uint64_t SharedRingBuffer::getIdx() const
+uint64_t SharedRingBufferNotThreadSafe::getIdx() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _tail;
 }
 
-uint64_t SharedRingBuffer::getTailIdx() const
+uint64_t SharedRingBufferNotThreadSafe::getTailIdx() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _tail;
 }
 
-size_t SharedRingBuffer::getSize() const
+size_t SharedRingBufferNotThreadSafe::getSize() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _size;
 }
 
-SharedMemory<uint8_t> SharedRingBuffer::getShm() const
+SharedMemory<uint8_t> SharedRingBufferNotThreadSafe::getShm() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return shm;
 }
 
-key_t SharedRingBuffer::getKey() const
+key_t SharedRingBufferNotThreadSafe::getKey() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return id;
 }
 
-uint64_t SharedRingBuffer::getHeadIdx() const
+uint64_t SharedRingBufferNotThreadSafe::getHeadIdx() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _head;
 }
 
-bool SharedRingBuffer::getMaster() const
+bool SharedRingBufferNotThreadSafe::getMaster() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return master;
 }
 
-uint64_t SharedRingBuffer::getOpCount() const
+uint64_t SharedRingBufferNotThreadSafe::getOpCount() const
 {
     SharedSemaphoreSentry ss(std::to_string(id), true);
     return _opcount;

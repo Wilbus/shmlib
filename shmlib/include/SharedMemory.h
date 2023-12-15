@@ -28,7 +28,6 @@ public:
 
         if (newMem)
         {
-            std::cout << "test0\n";
             shmid = shm_open(name.c_str(), O_CREAT | O_RDWR, 0666);
             ftruncate(shmid, sz);
             shm = static_cast<T*>(mmap(0, sz, PROT_WRITE | PROT_READ, MAP_SHARED, shmid, 0));
@@ -36,7 +35,6 @@ public:
         }
         else
         {
-            std::cout << "test1\n";
             shmid = shm_open(name.c_str(), O_CREAT | O_RDWR, 0666);
             shm = static_cast<T*>(mmap(0, sz, PROT_WRITE | PROT_READ, MAP_SHARED, shmid, 0));
             size = getSize();

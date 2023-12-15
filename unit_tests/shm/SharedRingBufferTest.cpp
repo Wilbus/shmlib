@@ -1,5 +1,6 @@
 #include "SharedRingBuffer.h"
 
+#include <cassert>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -159,15 +160,14 @@ int main(int argc, char* argv[])
     std::string arg = argv[0];
     if (argc == 1)
     {
-        // SharedSemaphore ss(sem0, true);
-        // ss.post();
-        // SharedSemaphoreSentry ss1(sem1, true);
+        // assignment operator test
+        SharedRingBuffer ringbuff0;
+        ringbuff0 = SharedRingBuffer(100, buffsize, true);
+        assert(ringbuff0.getSize() == buffsize);
+        ringbuff0.releaseBuffer();
 
-        /*// Launch child process
-        std::string s(argv[0]);
-        s += " child ";
-        if (0 != std::system(s.c_str()))
-            return 1;*/
+// multi process test
+#if 0
         SharedRingBuffer ringbuff = SharedRingBuffer(111, buffsize, true);
 
         std::thread t1process(syscall0, arg);
@@ -179,6 +179,7 @@ int main(int argc, char* argv[])
         t3process.join();
 
         ringbuff.releaseBuffer();
+#endif
     }
     else if (argc == 2)
     {

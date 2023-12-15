@@ -8,14 +8,14 @@
 
 namespace shm {
 
-class SharedRingBuffer : public ISharedRingBuffer
+class SharedRingBufferNotThreadSafe : public ISharedRingBuffer
 {
 public:
-    SharedRingBuffer();
+    SharedRingBufferNotThreadSafe();
 
-    SharedRingBuffer(key_t id, uint64_t length, bool newMem);
+    SharedRingBufferNotThreadSafe(key_t id, uint64_t length, bool newMem);
 
-    ~SharedRingBuffer();
+    ~SharedRingBufferNotThreadSafe();
 
     virtual bool push(uint8_t data) override;
 
@@ -45,9 +45,9 @@ public:
 
     uint64_t getOpCount() const;
 
-    SharedRingBuffer(const SharedRingBuffer& other);
+    SharedRingBufferNotThreadSafe(const SharedRingBufferNotThreadSafe& other);
 
-    SharedRingBuffer& operator=(const SharedRingBuffer& other);
+    SharedRingBufferNotThreadSafe& operator=(const SharedRingBufferNotThreadSafe& other);
 
 private:
     key_t id;
