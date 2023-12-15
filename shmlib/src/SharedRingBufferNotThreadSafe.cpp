@@ -180,4 +180,9 @@ uint64_t SharedRingBufferNotThreadSafe::getOpCount() const
 {
     return _opcount;
 }
+
+uint8_t* SharedRingBufferNotThreadSafe::getBuffPtr() const
+{
+    return buffPtr;
+}
 } // namespace shm

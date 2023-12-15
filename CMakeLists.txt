@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 
 add_library(${PROJECT_NAME} SHARED
-    ${CMAKE_CURRENT_LIST_DIR}/shmlib/src/SharedBuffer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/shmlib/src/SharedBlockQueue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/shmlib/src/SharedRingBuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/shmlib/src/SharedRingBufferNotThreadSafe.cpp
     ${CMAKE_CURRENT_LIST_DIR}/shmlib/src/SharedSemaphore.cpp

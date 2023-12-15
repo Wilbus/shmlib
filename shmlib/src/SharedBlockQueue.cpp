@@ -1,13 +1,13 @@
-#include "SharedBuffer.h"
+#include "SharedBlockQueue.h"
 
 namespace shm {
 
 // we use string type of key id to identify memory region
-SharedBuffer::SharedBuffer()
+SharedBlockQueue::SharedBlockQueue()
 {
 }
 
-SharedBuffer::SharedBuffer(key_t id, uint64_t length, bool newMem)
+SharedBlockQueue::SharedBlockQueue(key_t id, uint64_t length, bool newMem)
     : id(id)
     , master(newMem)
 {
@@ -16,12 +16,12 @@ SharedBuffer::SharedBuffer(key_t id, uint64_t length, bool newMem)
     sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, newMem);
 }
 
-// SharedBuffer::~SharedBuffer()
+// SharedBlockQueue::~SharedBlockQueue()
 //{
 // shm.markForRelease();
 //}
 
-bool SharedBuffer::releaseBuffer()
+bool SharedBlockQueue::releaseBuffer()
 {
     // open semaphore as parent so it gets deleted on exit of this function
     SharedSemaphoreSentry ss(semaphoreKeyName, true);
@@ -30,7 +30,7 @@ bool SharedBuffer::releaseBuffer()
     return true;
 }
 
-bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
+bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
 {
     SharedSemaphoreSentry ss(semaphoreKeyName);
 
@@ -55,7 +55,7 @@ bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
     return true;
 }
 
-bool SharedBuffer::pushblocksize(uint64_t size)
+bool SharedBlockQueue::pushblocksize(uint64_t size)
 {
     if (!sSizesBuffer.push(size))
     {
@@ -64,15 +64,13 @@ bool SharedBuffer::pushblocksize(uint64_t size)
     return true;
 }
 
-bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
+bool SharedBlockQueue::popblock(std::vector<uint8_t>& bytes)
 {
     SharedSemaphoreSentry ss(semaphoreKeyName);
 
     uint64_t blockSizeAtHead = 0;
     if (!popblocksize(blockSizeAtHead))
     {
-        // std::string msg = "ppblock() requested bytes: " + std::to_string(bytes.size()) + ", curr opcount " +
-        // std::to_string(ringbufferOpCount) + "\n"; std::cout << msg;
         return false;
     }
 
@@ -94,7 +92,7 @@ bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
     return true;
 }
 
-bool SharedBuffer::popblocksize(uint64_t& size)
+bool SharedBlockQueue::popblocksize(uint64_t& size)
 {
     if (!sSizesBuffer.pop(size))
     {
@@ -103,7 +101,7 @@ bool SharedBuffer::popblocksize(uint64_t& size)
     return true;
 }
 
-bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
+bool SharedBlockQueue::readfront(std::vector<uint8_t>& bytes)
 {
     SharedSemaphoreSentry ss(semaphoreKeyName);
 
@@ -112,15 +110,41 @@ bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
         return false;
     }
 
-    for (unsigned i = 0; i < bytes.size(); i++)
+    uint64_t blockSizeAtHead = 0;
+    if (!readfrontsize(blockSizeAtHead)) // false if empty
     {
-        bytes[i] = sRingBuffer.front();
-        sRingBuffer.pop();
+        return false;
+    }
+
+    auto opcount = sRingBuffer.getOpCount();
+    if (blockSizeAtHead > opcount || empty())
+    {
+        throw std::runtime_error("mismatch in size queue and bufferqueue when reading front");
+    }
+
+    bytes.resize(blockSizeAtHead);
+
+    auto head = sRingBuffer.getHeadIdx();
+    auto size = sRingBuffer.getSize();
+    for (unsigned i = 0; i < blockSizeAtHead; i++)
+    {
+        bytes[i] = sRingBuffer.getBuffPtr()[head];
+        head = (head + 1) % size;
     }
     return true;
 }
 
-bool SharedBuffer::empty()
+bool SharedBlockQueue::readfrontsize(uint64_t& size)
+{
+    if (!sSizesBuffer.isEmpty())
+    {
+        size = sSizesBuffer.front();
+        return true;
+    }
+    return false;
+}
+
+bool SharedBlockQueue::empty()
 {
     // dont acquire lock here, for internal class use only for now
     return sRingBuffer.isEmpty();

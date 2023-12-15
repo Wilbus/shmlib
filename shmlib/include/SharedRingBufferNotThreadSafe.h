@@ -45,6 +45,8 @@ public:
 
     uint64_t getOpCount() const;
 
+    uint8_t* getBuffPtr() const;
+
     SharedRingBufferNotThreadSafe(const SharedRingBufferNotThreadSafe& other);
 
     SharedRingBufferNotThreadSafe& operator=(const SharedRingBufferNotThreadSafe& other);

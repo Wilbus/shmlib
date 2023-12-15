@@ -1,4 +1,4 @@
-#include "SharedBuffer.h"
+#include "SharedBlockQueue.h"
 
 #include <cassert>
 #include <random>
@@ -58,9 +58,21 @@ void syscall2(std::string arg)
     }
 }
 
+void syscall3(std::string arg)
+{
+    // Launch child process
+    std::string s(arg);
+    std::string args = " 2 3 4 5";
+    s += args;
+    std::cout << "start t3\n";
+    if (0 != std::system(s.c_str()))
+    {
+    }
+}
+
 void pushfunc()
 {
-    SharedBuffer queue = SharedBuffer(key, size, false);
+    SharedBlockQueue queue = SharedBlockQueue(key, size, false);
 
     unsigned blockcount = 0;
     for (unsigned i = 0; i < size / blocksize; i++) // push size / vecsize blocks
@@ -77,8 +89,11 @@ void pushfunc()
             counter++;
         }
         if (queue.writeblock(bytes0))
+        {
             blockcount++;
-
+            std::vector<uint8_t> bytes;
+            // readfront()
+        }
         /*std::printf("pushing\n");
         for (auto b : bytes0)
             {
@@ -91,12 +106,32 @@ void pushfunc()
 
 void popfunc1()
 {
-    SharedBuffer queue = SharedBuffer(key, size, false);
+    SharedBlockQueue queue = SharedBlockQueue(key, size, false);
     unsigned blockcount = 0;
     for (unsigned i = 0; i < (size / blocksize) * 100; i++) // force pop more than push times
     {
         std::vector<uint8_t> bytes1;
         if (queue.popblock(bytes1))
+        {
+            blockcount++;
+            /*for (auto b : bytes1)
+            {
+                std::printf("%d", b);
+            }
+            std::printf("\n");*/
+        }
+    }
+    std::printf("popped %d blocks\n", blockcount);
+}
+
+void readfunc()
+{
+    SharedBlockQueue queue = SharedBlockQueue(key, size, false);
+    unsigned blockcount = 0;
+    for (unsigned i = 0; i < (size / blocksize) * 100; i++) // force pop more than push times
+    {
+        std::vector<uint8_t> bytes1;
+        if (queue.readfront(bytes1))
         {
             blockcount++;
             for (auto b : bytes1)
@@ -113,7 +148,7 @@ int main(int argc, char* argv[])
 {
     if (argc == 1)
     {
-        SharedBuffer queue = SharedBuffer(key, size, true);
+        SharedBlockQueue queue = SharedBlockQueue(key, size, true);
 /*begin singlethreaded test, dont run with other tests since they are testing with diffferent sizes*/
 #if 0
         std::vector<uint8_t> bytes0(5, 0);
@@ -160,7 +195,7 @@ int main(int argc, char* argv[])
         std::vector<uint8_t> readbytes3(5, 0);
 
         std::cout << "reading back buffer\n";
-        SharedBuffer readqueue = SharedBuffer(key, size, false);
+        SharedBlockQueue readqueue = SharedBlockQueue(key, size, false);
         // readqueue.readfront(readbytes0);
         readqueue.popblock(readbytes0);
         // readqueue.readfront(readbytes1);
@@ -197,9 +232,11 @@ int main(int argc, char* argv[])
         std::thread t1process(syscall0, arg);
         std::thread t2process(syscall1, arg);
         std::thread t3process(syscall2, arg);
+        std::thread t4process(syscall3, arg);
         t1process.join();
         t2process.join();
         t3process.join();
+        t4process.join();
 
         queue.releaseBuffer();
     }
@@ -209,9 +246,13 @@ int main(int argc, char* argv[])
     }
     else if (argc == 3)
     {
-        popfunc1();
+        readfunc();
     }
     else if (argc == 4)
+    {
+        popfunc1();
+    }
+    else if (argc == 5)
     {
         popfunc1();
     }

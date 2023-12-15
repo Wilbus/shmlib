@@ -182,6 +182,11 @@ public:
         return _head;
     }
 
+    T* getBuffPtr() const
+    {
+        return buffPtr;
+    }
+
     bool getMaster() const
     {
         return master;

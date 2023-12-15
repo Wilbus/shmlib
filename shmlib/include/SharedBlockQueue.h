@@ -21,14 +21,14 @@ namespace shm {
 - read and pop block of bytes from ring buffer
 */
 
-class SharedBuffer
+class SharedBlockQueue
 {
 public:
-    SharedBuffer();
+    SharedBlockQueue();
 
-    SharedBuffer(key_t id, uint64_t length, bool newMem);
+    SharedBlockQueue(key_t id, uint64_t length, bool newMem);
 
-    //~SharedBuffer();
+    //~SharedBlockQueue();
 
     bool writeblock(std::vector<uint8_t> bytes);
     bool popblock(std::vector<uint8_t>& bytes);
@@ -40,6 +40,7 @@ private:
     bool empty();
     bool pushblocksize(uint64_t size);
     bool popblocksize(uint64_t& size);
+    bool readfrontsize(uint64_t& size);
 
     key_t id;
     bool master;
