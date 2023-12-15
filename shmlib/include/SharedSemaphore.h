@@ -43,9 +43,9 @@ public:
     virtual int getValue() const override;
 
 private:
+    std::string semaphoreName;
     bool execreate;
     sem_t* semaphore;
-    std::string semaphoreName;
     int value{INITIAL_VALUE};
 };
 } // namespace shm

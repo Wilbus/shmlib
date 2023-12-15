@@ -13,6 +13,8 @@ namespace shm {
   the serialized data before hand, and this class probably
   won't work well if we try to store variable length data
 
+- different regions of memory need to use key_t id's in increments of 2
+  because the semaphore lock uses key_id id + 1
 
 - write block of bytes to ring buffer
 - read and pop block of bytes from ring buffer
@@ -30,17 +32,11 @@ public:
     bool writeblock(std::vector<uint8_t> bytes);
     bool popblock(std::vector<uint8_t>& bytes);
     bool readfront(std::vector<uint8_t>& bytes);
-    bool empty();
 
     bool releaseBuffer();
 
 private:
-    /*key_t id;
-    bool master;
-    uint8_t* buffPtr;
-    SharedMemory<uint8_t> shm;
-    SharedMemory<uint64_t> buffPropertiesShm;
-    uint64_t* propertiesPtr;*/
+    bool empty();
     key_t id;
     bool master;
     SharedRingBufferNotThreadSafe sRingBuffer;

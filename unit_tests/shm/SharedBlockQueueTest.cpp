@@ -56,7 +56,7 @@ void pushfunc()
     for (unsigned i = 0; i < size / blocksize; i++) // push size / vecsize blocks
     {
         std::vector<uint8_t> bytes0(blocksize, 0);
-        int counter = 0;
+        unsigned counter = 0;
         for (unsigned i = 0; i < blocksize; i++)
         {
             if (counter == 0)

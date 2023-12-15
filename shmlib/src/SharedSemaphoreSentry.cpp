@@ -5,7 +5,7 @@
 #include <time.h>
 
 #define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
-#define INITIAL_VALUE 1
+#define INITIAL_SENTRY_VALUE 1
 
 namespace shm {
 
@@ -14,7 +14,7 @@ SharedSemaphoreSentry::SharedSemaphoreSentry(std::string semaphoreName)
     : semaphoreName(semaphoreName)
     , execreate(false)
 {
-    semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_VALUE);
+    semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_SENTRY_VALUE);
 
     if (semaphore == SEM_FAILED)
     {
@@ -28,7 +28,7 @@ SharedSemaphoreSentry::SharedSemaphoreSentry(std::string semaphoreName, bool exe
     : semaphoreName(semaphoreName)
     , execreate(execreate)
 {
-    semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_VALUE);
+    semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_SENTRY_VALUE);
 
     if (semaphore == SEM_FAILED)
     {

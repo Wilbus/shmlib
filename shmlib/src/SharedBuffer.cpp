@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SharedBuffer.h"
 
 namespace shm {
@@ -25,6 +23,7 @@ bool SharedBuffer::releaseBuffer()
 {
     SharedSemaphoreSentry ss(std::to_string(id + 1), true);
     sRingBuffer.releaseBuffer();
+    return true;
 }
 
 bool SharedBuffer::writeblock(std::vector<uint8_t> bytes)
@@ -50,7 +49,7 @@ bool SharedBuffer::popblock(std::vector<uint8_t>& bytes)
 {
     SharedSemaphoreSentry ss(std::to_string(id + 1));
 
-    // we cant the block if the block size we are trying to pop is
+    // we cant pop the block if the block size we are trying to pop is
     // greater than the number of bytes currently in the ring buffer
     auto ringbufferOpCount = sRingBuffer.getOpCount();
     if (bytes.size() > ringbufferOpCount || empty())
@@ -86,7 +85,7 @@ bool SharedBuffer::readfront(std::vector<uint8_t>& bytes)
 
 bool SharedBuffer::empty()
 {
-    // SharedSemaphoreSentry ss(std::to_string(id + 1), true);
+    // dont acquire lock here, for internal class use only for now
     return sRingBuffer.isEmpty();
 }
 
