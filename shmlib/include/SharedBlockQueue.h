@@ -37,7 +37,7 @@ public:
 
     bool releaseBuffer();
 
-private:
+protected:
     bool empty();
     bool pushblocksize(uint64_t size);
     bool popblocksize(uint64_t& size);
