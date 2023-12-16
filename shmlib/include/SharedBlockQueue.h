@@ -32,6 +32,7 @@ public:
 
     bool writeblock(std::vector<uint8_t> bytes);
     bool popblock(std::vector<uint8_t>& bytes);
+    bool popblock();
     bool readfront(std::vector<uint8_t>& bytes);
 
     bool releaseBuffer();

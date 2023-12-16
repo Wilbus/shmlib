@@ -64,6 +64,32 @@ bool SharedBlockQueue::pushblocksize(uint64_t size)
     return true;
 }
 
+bool SharedBlockQueue::popblock()
+{
+    SharedSemaphoreSentry ss(semaphoreKeyName);
+
+    uint64_t blockSizeAtHead = 0;
+    if (!popblocksize(blockSizeAtHead))
+    {
+        return false;
+    }
+
+    // we cant pop the block if the block size we are trying to pop is
+    // greater than the number of bytes currently in the ring buffer
+    auto opcount = sRingBuffer.getOpCount();
+    if (blockSizeAtHead > opcount || empty())
+    {
+        throw std::runtime_error("mismatch in size queue and bufferqueue when popping");
+    }
+
+    for (unsigned i = 0; i < blockSizeAtHead; i++)
+    {
+        sRingBuffer.pop();
+    }
+
+    return true;
+}
+
 bool SharedBlockQueue::popblock(std::vector<uint8_t>& bytes)
 {
     SharedSemaphoreSentry ss(semaphoreKeyName);
