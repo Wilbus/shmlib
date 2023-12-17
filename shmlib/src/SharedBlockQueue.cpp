@@ -40,10 +40,7 @@ bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
 {
     SharedSemaphoreSentry ss(semaphoreKeyName);
 
-    if (!pushblocksize(bytes.size()))
-    {
-        return false; // queue holding sizes of blocks is full, so don't push anymore bytes into blocks queue
-    }
+    /*check if dataqueue and sizes queue has space before pushing data*/
 
     auto ringbufferOpCount = sRingBuffer.getOpCount(); // full when opcounet == size
     auto size = sRingBuffer.getSize();
@@ -55,10 +52,16 @@ bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
         return false;
     }
 
+    if (!pushblocksize(bytes.size()))
+    {
+        return false; // queue holding sizes of blocks is full, so don't push anymore bytes into blocks queue
+    }
+
     for (auto& byte : bytes)
     {
         sRingBuffer.push(byte);
     }
+
     return true;
 }
 
@@ -86,7 +89,9 @@ bool SharedBlockQueue::popblock()
     auto opcount = sRingBuffer.getOpCount();
     if (blockSizeAtHead > opcount || empty())
     {
-        throw std::runtime_error("mismatch in size queue and bufferqueue when popping");
+        std::string msg = "mismatch in size queue and bufferqueue when popping, opcount = " + std::to_string(opcount);
+        throw std::runtime_error(msg.c_str());
+        //return false;
     }
 
     for (unsigned i = 0; i < blockSizeAtHead; i++)
@@ -112,7 +117,8 @@ bool SharedBlockQueue::popblock(std::vector<uint8_t>& bytes)
     auto opcount = sRingBuffer.getOpCount();
     if (blockSizeAtHead > opcount || empty())
     {
-        throw std::runtime_error("mismatch in size queue and bufferqueue when popping");
+        std::string msg = "mismatch in size queue and bufferqueue when popping, blockSizeAtHead = " + std::to_string(blockSizeAtHead) + " opcount = " + std::to_string(opcount);
+        throw std::runtime_error(msg.c_str());
     }
 
     bytes.resize(blockSizeAtHead);
