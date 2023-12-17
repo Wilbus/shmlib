@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SharedBlockQueue.h"
 #include "SharedRingBufferNotThreadSafe.h"
 #include "SharedSemaphoreSentry.h"
 #include "TSharedRingBufferNotThreadSafe.h"

@@ -55,13 +55,10 @@ bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
         return false;
     }
 
-    std::printf("pushblock() %lu\n", ringbufferOpCount);
     for (auto& byte : bytes)
     {
         sRingBuffer.push(byte);
-        std::printf("%x", byte);
     }
-    std::printf("\n");
     return true;
 }
 
@@ -117,16 +114,13 @@ bool SharedBlockQueue::popblock(std::vector<uint8_t>& bytes)
     {
         throw std::runtime_error("mismatch in size queue and bufferqueue when popping");
     }
-    std::printf("popblock() %lu\n", opcount);
 
     bytes.resize(blockSizeAtHead);
     for (unsigned i = 0; i < blockSizeAtHead; i++)
     {
         bytes[i] = sRingBuffer.front();
         sRingBuffer.pop();
-        std::printf("%x", bytes[i]);
     }
-    std::printf("\n");
 
     return true;
 }
