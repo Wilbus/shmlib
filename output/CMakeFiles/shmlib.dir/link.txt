@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC  -std=c++17 -shared -Wl,-soname,libshmlib.so -o libshmlib.so CMakeFiles/shmlib.dir/shmlib/src/SharedBlockQueue.cpp.o CMakeFiles/shmlib.dir/shmlib/src/SharedRingBuffer.cpp.o CMakeFiles/shmlib.dir/shmlib/src/SharedRingBufferNotThreadSafe.cpp.o CMakeFiles/shmlib.dir/shmlib/src/SharedSemaphore.cpp.o CMakeFiles/shmlib.dir/shmlib/src/SharedSemaphoreSentry.cpp.o 

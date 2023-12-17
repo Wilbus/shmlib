@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++17 -std=c++17 CMakeFiles/SharedBlockQueueTest.dir/shm/SharedBlockQueueTest.cpp.o -o SharedBlockQueueTest  -Wl,-rpath,/datadisk0/sambashare0/coding/gitrepo/shmlib/output ../libshmlib.so 

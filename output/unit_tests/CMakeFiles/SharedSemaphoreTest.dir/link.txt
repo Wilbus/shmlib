@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++17 -std=c++17 CMakeFiles/SharedSemaphoreTest.dir/shm/SharedSemaphoreTest.cpp.o -o SharedSemaphoreTest  -Wl,-rpath,/datadisk0/sambashare0/coding/gitrepo/shmlib/output ../libshmlib.so 
