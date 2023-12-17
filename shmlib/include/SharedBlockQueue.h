@@ -1,8 +1,8 @@
 #pragma once
 
+#include "SharedBlockQueue.h"
 #include "SharedRingBufferNotThreadSafe.h"
 #include "SharedSemaphoreSentry.h"
-#include "SharedBlockQueue.h"
 #include "TSharedRingBufferNotThreadSafe.h"
 
 #include <vector>
@@ -38,13 +38,13 @@ public:
 
     bool releaseBuffer();
 
-        // remap the pointer addresses rather than copy the sharememory class' pointers
+    // remap the pointer addresses rather than copy the sharememory class' pointers
     SharedBlockQueue(const SharedBlockQueue& other)
     {
         id = other.id;
         master = other.master;
         length = other.length;
-        
+
         sRingBuffer = SharedRingBufferNotThreadSafe(id, length, master);
         sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, master);
     }
@@ -60,7 +60,7 @@ public:
         id = other.id;
         master = other.master;
         length = other.length;
-        
+
         sRingBuffer = SharedRingBufferNotThreadSafe(id, length, master);
         sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, master);
 

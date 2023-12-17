@@ -56,7 +56,7 @@ SharedSemaphore::SharedSemaphore(const SharedSemaphore& other) // other should g
 {
     this->execreate = other.getExeCreate();
     this->semaphoreName = other.getSemaphoreName();
-    throw std::runtime_error("test");
+    //throw std::runtime_error("test");
     // we expect semaphore file to already be opened in copying
     this->semaphore = sem_open(semaphoreName.c_str(), O_CREAT | O_RDWR, SEM_PERMS, INITIAL_VALUE);
 

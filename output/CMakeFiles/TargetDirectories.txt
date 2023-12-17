@@ -1,0 +1,10 @@
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/CMakeFiles/shmlib.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/CMakeFiles/edit_cache.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/CMakeFiles/rebuild_cache.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/SharedRingBufferTest.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/TSharedRingBufferTest.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/SharedBlockQueueTest.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/SharedMemoryTest.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/SharedSemaphoreTest.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/edit_cache.dir
+/datadisk0/sambashare0/coding/gitrepo/shmlib/output/unit_tests/CMakeFiles/rebuild_cache.dir

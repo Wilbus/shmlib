@@ -1,6 +1,7 @@
 #include "SharedBlockQueue.h"
-#include <iostream> 
-#include <unistd.h> 
+
+#include <iostream>
+#include <unistd.h>
 
 namespace shm {
 
@@ -19,9 +20,9 @@ SharedBlockQueue::SharedBlockQueue(key_t id, uint64_t length, bool newMem)
     sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, newMem);
 }
 
- SharedBlockQueue::~SharedBlockQueue()
+SharedBlockQueue::~SharedBlockQueue()
 {
-    //shm.markForRelease();
+    // shm.markForRelease();
     auto pid = getpid();
     std::printf("%d: SharedBlockQueue destructor\n", pid);
 }
@@ -50,7 +51,7 @@ bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
     if (ringbufferOpCount + bytes.size() >
         size) // the block we are trying to push exceeds the remaining bytes in buffer queue
     {
-        //throw std::runtime_error("mismatch in size queue and bufferqueue when pushing");
+        // throw std::runtime_error("mismatch in size queue and bufferqueue when pushing");
         return false;
     }
 
