@@ -7,6 +7,10 @@
 #include <mutex>
 #include <thread>
 
+#include <iostream> 
+#include <unistd.h> 
+
+
 namespace shm {
 
 template <typename T>
@@ -122,6 +126,7 @@ public:
             // throw std::runtime_error("pop error");
             return false;
         }
+        //std::cout << _opcount << " " << _head << "\n";
         frontval = buffPtr[_head];
         _head = (_head + 1) % _size;
         _opcount--;

@@ -1,4 +1,6 @@
 #include "SharedBlockQueue.h"
+#include <iostream> 
+#include <unistd.h> 
 
 namespace shm {
 
@@ -10,16 +12,19 @@ SharedBlockQueue::SharedBlockQueue()
 SharedBlockQueue::SharedBlockQueue(key_t id, uint64_t length, bool newMem)
     : id(id)
     , master(newMem)
+    , length(length)
 {
     semaphoreKeyName = std::to_string(id) + semaphoreName;
     sRingBuffer = SharedRingBufferNotThreadSafe(id, length, newMem);
     sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, newMem);
 }
 
-// SharedBlockQueue::~SharedBlockQueue()
-//{
-// shm.markForRelease();
-//}
+ SharedBlockQueue::~SharedBlockQueue()
+{
+    //shm.markForRelease();
+    auto pid = getpid();
+    std::printf("%d: SharedBlockQueue destructor\n", pid);
+}
 
 bool SharedBlockQueue::releaseBuffer()
 {
@@ -45,13 +50,17 @@ bool SharedBlockQueue::writeblock(std::vector<uint8_t> bytes)
     if (ringbufferOpCount + bytes.size() >
         size) // the block we are trying to push exceeds the remaining bytes in buffer queue
     {
-        throw std::runtime_error("mismatch in size queue and bufferqueue when pushing");
+        //throw std::runtime_error("mismatch in size queue and bufferqueue when pushing");
+        return false;
     }
 
+    std::printf("pushblock() %lu\n", ringbufferOpCount);
     for (auto& byte : bytes)
     {
         sRingBuffer.push(byte);
+        std::printf("%x", byte);
     }
+    std::printf("\n");
     return true;
 }
 
@@ -107,13 +116,16 @@ bool SharedBlockQueue::popblock(std::vector<uint8_t>& bytes)
     {
         throw std::runtime_error("mismatch in size queue and bufferqueue when popping");
     }
+    std::printf("popblock() %lu\n", opcount);
 
     bytes.resize(blockSizeAtHead);
     for (unsigned i = 0; i < blockSizeAtHead; i++)
     {
         bytes[i] = sRingBuffer.front();
         sRingBuffer.pop();
+        std::printf("%x", bytes[i]);
     }
+    std::printf("\n");
 
     return true;
 }

@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++17 -std=c++17 CMakeFiles/SharedRingBufferTest.dir/shm/SharedRingBufferTest.cpp.o -o SharedRingBufferTest  -Wl,-rpath,/datadisk0/sambashare0/coding/gitrepo/shmlib/output ../libshmlib.so 

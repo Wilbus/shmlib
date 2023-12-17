@@ -2,6 +2,7 @@
 
 #include "SharedRingBufferNotThreadSafe.h"
 #include "SharedSemaphoreSentry.h"
+#include "SharedBlockQueue.h"
 #include "TSharedRingBufferNotThreadSafe.h"
 
 #include <vector>
@@ -28,7 +29,7 @@ public:
 
     SharedBlockQueue(key_t id, uint64_t length, bool newMem);
 
-    //~SharedBlockQueue();
+    ~SharedBlockQueue();
 
     bool writeblock(std::vector<uint8_t> bytes);
     bool popblock(std::vector<uint8_t>& bytes);
@@ -36,6 +37,35 @@ public:
     bool readfront(std::vector<uint8_t>& bytes);
 
     bool releaseBuffer();
+
+        // remap the pointer addresses rather than copy the sharememory class' pointers
+    SharedBlockQueue(const SharedBlockQueue& other)
+    {
+        id = other.id;
+        master = other.master;
+        length = other.length;
+        
+        sRingBuffer = SharedRingBufferNotThreadSafe(id, length, master);
+        sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, master);
+    }
+
+    // remap the pointer addresses rather than copy the sharememory class' pointers
+    SharedBlockQueue& operator=(const SharedBlockQueue& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        id = other.id;
+        master = other.master;
+        length = other.length;
+        
+        sRingBuffer = SharedRingBufferNotThreadSafe(id, length, master);
+        sSizesBuffer = TSharedRingBufferNotThreadSafe<uint64_t>(id, length, master);
+
+        return *this;
+    }
 
 protected:
     bool empty();
@@ -45,6 +75,7 @@ protected:
 
     key_t id;
     bool master;
+    uint64_t length;
     std::string semaphoreKeyName;
     SharedRingBufferNotThreadSafe sRingBuffer;
     TSharedRingBufferNotThreadSafe<uint64_t> sSizesBuffer;
