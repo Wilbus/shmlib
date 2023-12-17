@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++17 -std=c++17 CMakeFiles/SharedMemoryTest.dir/shm/SharedMemoryTest.cpp.o -o SharedMemoryTest  -Wl,-rpath,/datadisk0/sambashare0/coding/gitrepo/shmlib/output ../libshmlib.so 
